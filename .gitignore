@@ -1,0 +1,42 @@
+# ---- Build output ----
+bin/
+target/
+out/
+build/
+*.class
+
+# ---- Local configuration (holds database credentials) ----
+db.properties
+
+# ---- Eclipse ----
+.classpath
+.project
+.settings/
+.metadata/
+.factorypath
+.apt_generated/
+.recommenders/
+
+# ---- IntelliJ IDEA ----
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ---- VS Code ----
+.vscode/
+
+# ---- NetBeans ----
+nbproject/private/
+nbbuild/
+nbdist/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs & JVM crash dumps ----
+*.log
+hs_err_pid*
+replay_pid*

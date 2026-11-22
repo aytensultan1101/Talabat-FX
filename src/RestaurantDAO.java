@@ -1,15 +1,19 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class RestaurantDAO {
+public final class RestaurantDAO {
 
-    // 1️⃣ Get all restaurant names
-    public static ArrayList<String> getAllRestaurants() {
+    private RestaurantDAO() {}
 
-        ArrayList<String> restaurants = new ArrayList<>();
-        String sql = "SELECT name FROM restaurants";
+    /** Returns the names of all restaurants. */
+    public static List<String> getAllRestaurants() throws SQLException {
+
+        List<String> restaurants = new ArrayList<>();
+        String sql = "SELECT name FROM restaurants ORDER BY id";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -18,16 +22,12 @@ public class RestaurantDAO {
             while (rs.next()) {
                 restaurants.add(rs.getString("name"));
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
         return restaurants;
     }
 
-    // 2️⃣ Get restaurant ID by name (IMPORTANT)
-    public static int getRestaurantIdByName(String name) {
+    /** Returns the ID of the restaurant with the given name, or -1 if there is none. */
+    public static int getRestaurantIdByName(String name) throws SQLException {
 
         String sql = "SELECT id FROM restaurants WHERE name = ?";
 
@@ -35,16 +35,12 @@ public class RestaurantDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("id");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return -1; // not found
+        return -1;
     }
 }

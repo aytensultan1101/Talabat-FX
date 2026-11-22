@@ -1,38 +1,38 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MenuItemDAO {
+public final class MenuItemDAO {
 
-    public static ArrayList<MenuItem> getMenuItemsByRestaurant(String restaurantName) {
+    private MenuItemDAO() {}
 
-        ArrayList<MenuItem> list = new ArrayList<>();
+    public static List<MenuItem> getMenuItemsByRestaurant(String restaurantName) throws SQLException {
+
+        List<MenuItem> list = new ArrayList<>();
 
         String sql =
             "SELECT m.id, m.name, m.price " +
             "FROM menu_items m " +
             "JOIN restaurants r ON m.restaurant_id = r.id " +
-            "WHERE r.name = ?";
+            "WHERE r.name = ? " +
+            "ORDER BY m.id";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, restaurantName);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                list.add(
-                    new MenuItem(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getDouble("price")
-                    )
-                );
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new MenuItem(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getDouble("price")));
+                }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
         return list;
     }
 }

@@ -1,36 +1,34 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class DriverDAO {
+public final class DriverDAO {
 
-    public static int getRandomDriverId() throws Exception {
+    public record Driver(int id, String name) {}
 
-        String sql = "SELECT user_id FROM drivers ORDER BY RAND() LIMIT 1";
+    private DriverDAO() {}
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
+    /**
+     * Picks a random driver to deliver an order.
+     *
+     * @throws SQLException if there are no drivers in the database
+     */
+    public static Driver findRandomDriver(Connection con) throws SQLException {
+
+        String sql =
+            "SELECT u.id, u.name " +
+            "FROM drivers d " +
+            "JOIN users u ON u.id = d.user_id " +
+            "ORDER BY RAND() LIMIT 1";
+
+        try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
-                return rs.getInt("user_id");
+                return new Driver(rs.getInt("id"), rs.getString("name"));
             }
         }
-        return -1; // ❌ no driver found
-    }
-
-    public static String getDriverName(int driverId) throws Exception {
-
-        String sql = "SELECT name FROM users WHERE id = ?";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, driverId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getString("name");
-            }
-        }
-        return "Unknown driver";
+        throw new SQLException("No drivers available to deliver the order");
     }
 }

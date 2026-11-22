@@ -1,49 +1,47 @@
-public class CheckoutService {
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
-    public static String checkout(
-            String name,
-            String email,
-            String address,
-            String paymentMethod
-    ) {
+/** Turns the current cart into a saved order. */
+public final class CheckoutService {
 
-        try {
-            // 1️⃣ Save user
-            int userId = UserDAO.insertUser(name, email, "customer");
+    private CheckoutService() {}
 
-            // 2️⃣ Save customer
-            CustomerDAO.insertCustomer(userId, address);
+    /**
+     * Saves the customer, order, order items and payment, then clears the cart.
+     *
+     * <p>All writes happen in a single transaction: if any step fails, nothing is
+     * saved and the cart is left untouched so the user can try again.
+     *
+     * @return the name of the driver assigned to the order
+     * @throws SQLException if the database is unreachable, no driver is available, or any insert fails
+     */
+    public static String checkout(String name, String email, String address, String paymentMethod)
+            throws SQLException {
 
-            // 3️⃣ Assign driver
-            int driverId = DriverDAO.getRandomDriverId();
-            String driverName = DriverDAO.getDriverName(driverId);
+        try (Connection con = DBConnection.getConnection()) {
+            con.setAutoCommit(false);
+            try {
+                int userId = UserDAO.insertUser(con, name, email, "customer");
+                CustomerDAO.insertCustomer(con, userId, address);
 
-            // 4️⃣ Save order
-            double total = Cart.getTotal();
-            int orderId = OrderDAO.insertOrder(userId, driverId, total);
+                DriverDAO.Driver driver = DriverDAO.findRandomDriver(con);
 
-            // 5️⃣ Save order items (with quantity)
-            for (MenuItem item : Cart.getItems().keySet()) {
-                int qty = Cart.getItems().get(item);
-                OrderItemDAO.insertOrderItem(
-                        orderId,
-                        item.getId(),
-                        qty
-                );
+                int orderId = OrderDAO.insertOrder(con, userId, driver.id(), Cart.getTotal());
+                for (Map.Entry<MenuItem, Integer> entry : Cart.getItems().entrySet()) {
+                    OrderItemDAO.insertOrderItem(con, orderId, entry.getKey().getId(), entry.getValue());
+                }
+
+                PaymentDAO.insertPayment(con, orderId, paymentMethod);
+
+                con.commit();
+                Cart.clear();
+                return driver.name();
+
+            } catch (SQLException | RuntimeException e) {
+                con.rollback();
+                throw e;
             }
-
-            // 6️⃣ Save payment
-            PaymentDAO.insertPayment(orderId, paymentMethod);
-
-            // 7️⃣ Clear cart
-            Cart.clear();
-
-            // ✅ RETURN DRIVER NAME (THIS IS IMPORTANT)
-            return driverName;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Unknown driver";
         }
     }
 }

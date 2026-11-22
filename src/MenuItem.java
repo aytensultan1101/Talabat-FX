@@ -1,10 +1,9 @@
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Scalar.String;
-
+/** A dish or drink on a restaurant's menu. Two items are equal when they share the same database ID. */
 public class MenuItem {
 
-    private int id;
-    private String name;
-    private double price;
+    private final int id;
+    private final String name;
+    private final double price;
 
     public MenuItem(int id, String name, double price) {
         this.id = id;
@@ -26,6 +25,6 @@ public class MenuItem {
 
     @Override
     public int hashCode() {
-        return id;
+        return Integer.hashCode(id);
     }
 }

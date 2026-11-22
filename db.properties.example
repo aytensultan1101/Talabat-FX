@@ -1,0 +1,11 @@
+# Database settings for Talabat FX.
+#
+# Copy this file to "db.properties" (same folder) and fill in your MySQL password.
+# db.properties is git-ignored, so your credentials never get committed.
+#
+# Environment variables TALABAT_DB_URL, TALABAT_DB_USER and TALABAT_DB_PASSWORD
+# override these values if set.
+
+db.url=jdbc:mysql://localhost:3306/talabat_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+db.user=root
+db.password=

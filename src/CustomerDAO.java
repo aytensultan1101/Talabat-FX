@@ -1,21 +1,19 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public class CustomerDAO {
+public final class CustomerDAO {
 
-    public static void insertCustomer(int userId, String address) {
+    private CustomerDAO() {}
+
+    public static void insertCustomer(Connection con, int userId, String address) throws SQLException {
 
         String sql = "INSERT INTO customers (user_id, address) VALUES (?, ?)";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ps.setString(2, address);
             ps.executeUpdate();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

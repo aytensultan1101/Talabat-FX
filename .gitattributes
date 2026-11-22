@@ -1,0 +1,16 @@
+# Normalize line endings in the repository; check out with the platform's native endings.
+* text=auto
+
+*.java        text diff=java
+*.css         text diff=css
+*.sql         text
+*.xml         text
+*.md          text diff=markdown
+*.properties  text
+
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.gif         binary
+*.ico         binary
+*.jar         binary

@@ -4,27 +4,68 @@
     -fx-font-family: "Comic Sans MS";
 }
 
-/* List background */
+/* Lists (restaurants, menu, cart) */
 .list-view {
     -fx-background-color: #ffe6f0;
     -fx-padding: 10;
 }
 
-/* Each restaurant row */
 .list-cell {
     -fx-background-color: transparent;
     -fx-padding: 10;
 }
 
-/* Restaurant names */
+/* Cute hover ✨ */
+.list-cell:filled:hover {
+    -fx-background-color: #ffd6e8;
+    -fx-background-radius: 20;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: #ffc2dc;
+    -fx-background-radius: 20;
+}
+
+/* Text */
 .label {
     -fx-text-fill: #d63384;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 }
 
-/* Cute hover ✨ */
-.list-cell:hover {
-    -fx-background-color: #ffd6e8;
+/* Screen titles */
+.label.title {
+    -fx-text-fill: #c2255c;
+    -fx-font-size: 26px;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #f06595;
     -fx-background-radius: 20;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 16;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #e64980;
+}
+
+.button:pressed {
+    -fx-background-color: #c2255c;
+}
+
+/* Form fields */
+.text-field {
+    -fx-background-radius: 15;
+    -fx-font-size: 15px;
+}
+
+.radio-button {
+    -fx-text-fill: #d63384;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
 }
